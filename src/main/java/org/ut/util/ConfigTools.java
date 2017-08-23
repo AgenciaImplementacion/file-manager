@@ -1,18 +1,27 @@
 package org.ut.util;
 
+import org.ut.driver.DLocalFiles;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.io.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ConfigTools {
-    public static Properties readConfigFile(String url){
+
+    private final static Logger LOGGER = Logger.getLogger(DLocalFiles.class.getName());
+
+    public static Properties readConfigFile(InputStream configFile) {
         try {
             Properties prop = new Properties();
-            InputStream is = new FileInputStream(url);
-            prop.load(is);
+            prop.load(configFile);
             return prop;
-        } catch(IOException e) {
-            System.err.println(e.toString());
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Error: (ConfigTools.readConfigFile.IOException) " + e.getMessage(), e);
         }
         return null;
     }
+
 }

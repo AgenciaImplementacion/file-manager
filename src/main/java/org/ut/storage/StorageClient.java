@@ -11,10 +11,12 @@ import org.ut.util.ConfigTools;
 import org.ut.util.FileTools;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.FileAlreadyExistsException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -51,7 +53,7 @@ public class StorageClient {
         }
     }
 
-    public boolean store(MultipartFile file, String path, String driver) {
+    public boolean store(MultipartFile file, String path, String driver) throws IOException {
         if (this.drivers.containsKey(driver)) {
             Driver d = this.drivers.get(driver);
             return d.store(file, path);

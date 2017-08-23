@@ -1,6 +1,7 @@
 package org.ut.util;
 
 import java.io.*;
+import java.nio.file.FileAlreadyExistsException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.zip.*;
@@ -36,23 +37,20 @@ public class FileTools {
     }
 
     public static void saveFile(MultipartFile file, String path) throws IOException {
-        String realFileName;
-        String fileName = file.getName();
-        if (fileName.lastIndexOf(File.separator) >= 0) {
-            realFileName = path + File.separatorChar
-                    + fileName.substring(fileName.lastIndexOf(File.separatorChar));
+        String fileName = file.getOriginalFilename();
+        new File(path).mkdirs();
+        File f = new File(path + File.separatorChar + fileName + ".zip");
+        if (!f.exists()) {
+            ZipOutputStream o = new ZipOutputStream(new FileOutputStream(f));
+            ZipEntry e = new ZipEntry(fileName);
+            o.putNextEntry(e);
+            byte[] data = file.getBytes();
+            o.write(data, 0, data.length);
+            o.closeEntry();
+            o.close();
         } else {
-            realFileName = path + File.separatorChar
-                    + fileName.substring(fileName.lastIndexOf(File.separatorChar) + 1);
+            throw new FileAlreadyExistsException("Error: " + fileName + " al ready exist");
         }
-        File f = new File(path + File.separatorChar + file.getName() + ".zip");
-        ZipOutputStream o = new ZipOutputStream(new FileOutputStream(f));
-        ZipEntry e = new ZipEntry(realFileName);
-        o.putNextEntry(e);
-        byte[] data = file.getBytes();
-        o.write(data, 0, data.length);
-        o.closeEntry();
-        o.close();
     }
 
     public static File[] getFilesFolder(String folderPath) {

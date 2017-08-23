@@ -2,6 +2,7 @@ package org.ut.driver;
 
 import org.springframework.web.multipart.MultipartFile;
 import org.ut.util.FileTools;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -31,16 +32,10 @@ public class DLocalFiles implements Driver {
         return this.config.getProperty("name");
     }
 
-    public boolean store(MultipartFile file, String path) {
+    public boolean store(MultipartFile file, String path) throws IOException {
         if (!file.isEmpty()) {
-            try {
-                FileTools.saveFile(file, this.fullBasePath + File.separatorChar + path);
-                return true;
-            } catch (FileNotFoundException e) {
-                LOGGER.log(Level.SEVERE, "Error: (DLocalFiles.store.FileNotFoundException) " + e.getMessage(), e);
-            } catch (IOException e) {
-                LOGGER.log(Level.SEVERE, "Error: (DLocalFiles.store.IOException) " + e.getMessage(), e);
-            }
+            FileTools.saveFile(file, this.fullBasePath + File.separatorChar + path);
+            return true;
         }
         return false;
     }

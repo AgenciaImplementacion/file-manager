@@ -1,6 +1,8 @@
 package org.ut.driver;
 
 import org.ut.util.ConfigTools;
+
+import java.io.InputStream;
 import java.util.Properties;
 
 public class DriverFactory {
@@ -10,30 +12,21 @@ public class DriverFactory {
     public static final int SFTP = 3;
     public static final int GOOGLE_DRIVE = 4;
 
-    public Driver getDriver(String urlConfig) {
-        Properties p = ConfigTools.readConfigFile(urlConfig);
+    public static Driver getDriver(InputStream configFile) {
+        Properties p = ConfigTools.readConfigFile(configFile);
         if (p != null) {
             int driver = Integer.parseInt(p.getProperty("driver"));
             if (driver > 0) {
-                return this.getDriver(driver, p);
+                return DriverFactory.getDriver(driver, p);
             } else {
-                return this.getDriver(DriverFactory.LOCAL_FILES, p);
+                return DriverFactory.getDriver(DriverFactory.LOCAL_FILES, p);
             }
         } else {
             return null;
         }
     }
 
-    public Driver getDriver(int driver, String urlConfig) {
-        Properties p = ConfigTools.readConfigFile(urlConfig);
-        if (p != null) {
-            return this.getDriver(driver, p);
-        } else {
-            return null;
-        }
-    }
-
-    public Driver getDriver(int driver, Properties config) {
+    public static Driver getDriver(int driver, Properties config) {
         switch (driver) {
             case DriverFactory.LOCAL_FILES:
                 return new DLocalFiles(config);

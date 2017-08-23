@@ -34,6 +34,8 @@ public class WSFileController {
     @RequestMapping(value = "/file", method = RequestMethod.POST)
     public ResponseEntity<MessageResponse> upload(@RequestParam("file") MultipartFile file) {
         MessageResponse r = new MessageResponse();
+        StorageClient st = StorageClient.getInstance();
+        st.store(file,"","Local");
         return new ResponseEntity<MessageResponse>(r, HttpStatus.OK);
     }
 

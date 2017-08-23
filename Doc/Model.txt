@@ -1,0 +1,57 @@
+@startuml
+skinparam componentStyle uml2
+skinparam linetype ortho
+
+[Storage Client] as ST
+
+frame "Drivers" as DR {
+    [Driver FTP] as FTP
+    [Driver SFTP] as SFTP
+    [Driver Google Drive] as GDR
+    [Driver OwnCloud] as OCL
+    [Driver Dropbox] as DRB
+    [Driver OneDrive] as OD
+    [Driver OrfeoGPL] as OFO
+    [Driver Alfresco] as ALF
+    [Driver SharePoint] as SP
+    [Driver Local Files] as LF
+}
+
+[Driver] <<Interface>> as D
+
+DR ..|> D
+
+ST *-- D
+
+[WSController] as WS
+
+frame "Libs" as LIB {
+    [PHP client library] as PHP
+    [Javascript client library] as JS
+    [Python client library] as PY
+    [.NET client library] as PN
+    [JAVA client library]
+}
+
+[SOLR] as SR
+
+frame "Clients" as CL {
+    [WEB Client] as WC
+    [Mobile Client] as MC
+}
+
+interface http as HTTP1
+interface "http rest api" as HTTP2
+
+LIB -(0- WS : http
+CL -(0- WS : http
+WS .(0. SR : "  http"
+
+WS *-- ST
+
+SR - HTTP1
+WS - HTTP2
+
+
+
+@enduml

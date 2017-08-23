@@ -37,9 +37,9 @@ public class DLocalFiles implements Driver {
                 FileTools.saveFile(file, this.fullBasePath + File.separatorChar + path);
                 return true;
             } catch (FileNotFoundException e) {
-                LOGGER.log(Level.SEVERE, "Error: (FileNotFoundException) " + e.getMessage(), e);
+                LOGGER.log(Level.SEVERE, "Error: (DLocalFiles.store.FileNotFoundException) " + e.getMessage(), e);
             } catch (IOException e) {
-                LOGGER.log(Level.SEVERE, "Error: (IOException) " + e.getMessage(), e);
+                LOGGER.log(Level.SEVERE, "Error: (DLocalFiles.store.IOException) " + e.getMessage(), e);
             }
         }
         return false;

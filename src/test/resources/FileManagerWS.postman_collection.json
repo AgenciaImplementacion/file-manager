@@ -1,0 +1,32 @@
+{
+	"variables": [],
+	"info": {
+		"name": "FileManagerWS",
+		"_postman_id": "e87790ba-5dc4-b54f-3b8b-37c3edf1dce4",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Upload files",
+			"request": {
+				"url": "http://localhost:8888/api/v1/file",
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "",
+							"description": "",
+							"type": "file",
+							"src": "test1.pdf"
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}

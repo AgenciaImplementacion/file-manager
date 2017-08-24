@@ -23,7 +23,7 @@ public class DSftp implements Driver {
     }
 
     @Override
-    public boolean store(MultipartFile file, String path) {
+    public boolean store(MultipartFile file, String path, boolean rewrite) {
         return false;
     }
 }

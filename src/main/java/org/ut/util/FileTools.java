@@ -36,21 +36,23 @@ public class FileTools {
         return content;
     }
 
-    public static void saveFile(MultipartFile file, String path) throws IOException {
+    public static void saveFile(MultipartFile file, String path, boolean rewrite) throws IOException {
         String fileName = file.getOriginalFilename();
         new File(path).mkdirs();
         File f = new File(path + File.separatorChar + fileName + ".zip");
-        if (!f.exists()) {
-            ZipOutputStream o = new ZipOutputStream(new FileOutputStream(f));
-            ZipEntry e = new ZipEntry(fileName);
-            o.putNextEntry(e);
-            byte[] data = file.getBytes();
-            o.write(data, 0, data.length);
-            o.closeEntry();
-            o.close();
-        } else {
+        if (f.exists() && rewrite) {
+            f.delete();
+        }
+        if(f.exists() && !rewrite){
             throw new FileAlreadyExistsException("Error: " + fileName + " al ready exist");
         }
+        ZipOutputStream o = new ZipOutputStream(new FileOutputStream(f));
+        ZipEntry e = new ZipEntry(fileName);
+        o.putNextEntry(e);
+        byte[] data = file.getBytes();
+        o.write(data, 0, data.length);
+        o.closeEntry();
+        o.close();
     }
 
     public static File[] getFilesFolder(String folderPath) {

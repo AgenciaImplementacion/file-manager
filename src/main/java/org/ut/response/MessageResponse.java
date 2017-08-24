@@ -17,6 +17,16 @@ public class MessageResponse implements Serializable {
         this.message = message;
     }
 
+    public void setOk(String message) {
+        this.message = message;
+        this.setStatus(true);
+    }
+
+    public void setError(String message){
+        this.message = message;
+        this.setStatus(false);
+    }
+
     public boolean isStatus() {
         return status;
     }

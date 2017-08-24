@@ -8,5 +8,5 @@ import java.util.Properties;
 public interface Driver {
     String getName();
     void setConfig(Properties config);
-    boolean store(MultipartFile file, String path) throws IOException;
+    boolean store(MultipartFile file, String path, boolean rewrite) throws IOException;
 }

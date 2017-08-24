@@ -53,10 +53,10 @@ public class StorageClient {
         }
     }
 
-    public boolean store(MultipartFile file, String path, String driver) throws IOException {
+    public boolean store(MultipartFile file, String path, String driver, boolean rewrite) throws IOException {
         if (this.drivers.containsKey(driver)) {
             Driver d = this.drivers.get(driver);
-            return d.store(file, path);
+            return d.store(file, path, rewrite);
         } else {
             LOGGER.log(Level.SEVERE, "Error: (StorageClient.store.DriverNotFound) " + driver);
         }

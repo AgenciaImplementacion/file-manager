@@ -40,20 +40,38 @@ public class WSFileController {
     }
 
     @RequestMapping(value = "/file", method = RequestMethod.POST)
-    public ResponseEntity<MessageResponse> upload(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<MessageResponse> upload(@RequestParam("file") MultipartFile file,
+                                                  @RequestParam("path") String path,
+                                                  @RequestParam("driver") String driver) {
         MessageResponse r = new MessageResponse();
         StorageClient st = StorageClient.getInstance();
         try {
-            st.store(file, "/test/files", "Local");
-            r.setStatus(true);
-            r.setMessage("Success");
+            st.store(file, path, driver, false);
+            r.setOk("Success");
         } catch (FileAlreadyExistsException e) {
-            r.setStatus(false);
-            r.setMessage("File already exists");
+            r.setError("File already exists");
             LOGGER.log(Level.SEVERE, "Error: (DLocalFiles.store.FileNotFoundException) " + e.getMessage(), e);
         } catch (IOException e) {
-            r.setStatus(false);
-            r.setMessage(e.getMessage());
+            r.setError(e.getMessage());
+            LOGGER.log(Level.SEVERE, "Error: (DLocalFiles.store.IOException) " + e.getMessage(), e);
+        }
+        return new ResponseEntity<>(r, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/file", method = RequestMethod.PUT)
+    public ResponseEntity<MessageResponse> update(@RequestParam("file") MultipartFile file,
+                                                  @RequestParam("path") String path,
+                                                  @RequestParam("driver") String driver) {
+        MessageResponse r = new MessageResponse();
+        StorageClient st = StorageClient.getInstance();
+        try {
+            st.store(file, path, driver, true);
+            r.setOk("Success");
+        } catch (FileAlreadyExistsException e) {
+            r.setError("File already exists");
+            LOGGER.log(Level.SEVERE, "Error: (DLocalFiles.store.FileNotFoundException) " + e.getMessage(), e);
+        } catch (IOException e) {
+            r.setError(e.getMessage());
             LOGGER.log(Level.SEVERE, "Error: (DLocalFiles.store.IOException) " + e.getMessage(), e);
         }
         return new ResponseEntity<>(r, HttpStatus.OK);

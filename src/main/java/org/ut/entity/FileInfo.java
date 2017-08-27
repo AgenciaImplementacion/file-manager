@@ -5,13 +5,13 @@ import java.io.Serializable;
 public class FileInfo implements Serializable {
 
     private String name;
-    private String url;
+    private String path;
     private long size;
 
 
-    public FileInfo(String name, String url, long size) {
+    public FileInfo(String name, String path, long size) {
         this.name = name;
-        this.url = url;
+        this.path = path;
         this.size = size;
     }
 
@@ -19,8 +19,8 @@ public class FileInfo implements Serializable {
         this.name = name;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setPath(String path) {
+        this.path = path;
     }
 
     public void setSize(long size) {
@@ -31,8 +31,8 @@ public class FileInfo implements Serializable {
         return name;
     }
 
-    public String getUrl() {
-        return url;
+    public String getPath() {
+        return path;
     }
 
     public long getSize() {

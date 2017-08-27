@@ -1,6 +1,8 @@
 package org.ut.driver;
 
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.web.multipart.MultipartFile;
+import org.ut.entity.FolderInfo;
 import org.ut.util.FileTools;
 
 import java.io.File;
@@ -38,6 +40,26 @@ public class DLocalFiles implements Driver {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public FolderInfo list(String path) throws IOException {
+        FolderInfo f = new FolderInfo();
+        File[] files = FileTools.getFilesFolder(this.fullBasePath + File.separatorChar + path);
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    f.addFolder(this.list(path + File.separatorChar + file.getName()));
+                } else {
+                    f.addFile(file, path);
+                }
+            }
+        }
+        f.setPath(path);
+        String name = FilenameUtils.getBaseName(path);
+        f.setName(name.isEmpty() ? "/" : name);
+        f.setConnection(this.getName());
+        return f;
     }
 
 }

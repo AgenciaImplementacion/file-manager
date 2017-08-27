@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.ut.driver.DLocalFiles;
+import org.ut.driver.DriverNotFoundException;
 import org.ut.entity.ServiceInfo;
 import org.ut.response.FileServicesResponse;
+import org.ut.response.FolderListResponse;
 import org.ut.response.MessageResponse;
 import org.ut.storage.StorageClient;
 
@@ -33,7 +35,7 @@ public class WSFileController {
         r.addService("Update file", "/api/v1/file", ServiceInfo.M_PUT);
         r.addService("Download file", "/api/v1/file/{id}", ServiceInfo.M_GET);
         r.addService("List all files", "/api/v1/file", ServiceInfo.M_GET);
-        r.addService("List a segment files", "/api/v1/file?offset={#}&limit={#}", ServiceInfo.M_GET);
+        r.addService("List a segment files", "/api/v1/file/{driver}/{depth}", ServiceInfo.M_GET);
         r.addService("File information", "/api/v1/file/info/{id}", ServiceInfo.M_GET);
         r.addService("Delete File", "/api/v1/file/{id}", ServiceInfo.M_DELETE);
         return new ResponseEntity<>(r, HttpStatus.OK);
@@ -54,6 +56,9 @@ public class WSFileController {
         } catch (IOException e) {
             r.setError(e.getMessage());
             LOGGER.log(Level.SEVERE, "Error: (DLocalFiles.store.IOException) " + e.getMessage(), e);
+        } catch (DriverNotFoundException e) {
+            r.setError(e.getMessage());
+            LOGGER.log(Level.SEVERE, "Error: (DLocalFiles.store.DriverNotFoundException) " + e.getMessage(), e);
         }
         return new ResponseEntity<>(r, HttpStatus.OK);
     }
@@ -73,14 +78,48 @@ public class WSFileController {
         } catch (IOException e) {
             r.setError(e.getMessage());
             LOGGER.log(Level.SEVERE, "Error: (DLocalFiles.store.IOException) " + e.getMessage(), e);
+        } catch (DriverNotFoundException e) {
+            r.setError(e.getMessage());
+            LOGGER.log(Level.SEVERE, "Error: (DLocalFiles.store.DriverNotFoundException) " + e.getMessage(), e);
         }
         return new ResponseEntity<>(r, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/file", method = RequestMethod.GET)
-    public ResponseEntity<MessageResponse> list() {
-        MessageResponse r = new MessageResponse();
+    public ResponseEntity<FolderListResponse> list() {
+        FolderListResponse r = new FolderListResponse();
         StorageClient c = StorageClient.getInstance();
+        try {
+            for (String driver : c.getDriverList()) {
+                r.addData(c.list("", driver));
+            }
+            r.setOk("Success");
+        } catch (DriverNotFoundException e) {
+            r.setError(e.getMessage());
+            LOGGER.log(Level.SEVERE, "Error: (DLocalFiles.list.DriverNotFoundException) " + e.getMessage(), e);
+        } catch (IOException e) {
+            r.setError(e.getMessage());
+            LOGGER.log(Level.SEVERE, "Error: (DLocalFiles.list.IOException) " + e.getMessage(), e);
+        }
+        return new ResponseEntity<>(r, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/file/{driver}/{depth}", method = RequestMethod.GET)
+    public ResponseEntity<FolderListResponse> listFromADriver() {
+        FolderListResponse r = new FolderListResponse();
+        StorageClient c = StorageClient.getInstance();
+        try {
+            for (String driver : c.getDriverList()) {
+                r.addData(c.list("", driver));
+            }
+            r.setOk("Success");
+        } catch (DriverNotFoundException e) {
+            r.setError(e.getMessage());
+            LOGGER.log(Level.SEVERE, "Error: (DLocalFiles.list.DriverNotFoundException) " + e.getMessage(), e);
+        } catch (IOException e) {
+            r.setError(e.getMessage());
+            LOGGER.log(Level.SEVERE, "Error: (DLocalFiles.list.IOException) " + e.getMessage(), e);
+        }
         return new ResponseEntity<>(r, HttpStatus.OK);
     }
 

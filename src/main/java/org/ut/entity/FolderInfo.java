@@ -1,6 +1,9 @@
 package org.ut.entity;
 
+import org.ut.util.FileTools;
+
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +26,8 @@ public class FolderInfo implements Serializable {
         this.files.add(f);
     }
 
-    public void addFile(File f, String path) {
-        this.files.add(new FileInfo(f.getName(), path, f.length()));
+    public void addFile(File f, String path) throws IOException {
+        this.files.add(new FileInfo(f.getName(), path, f.length(), FileTools.getAttributesOfFile(f)));
     }
 
     public void addFolder(FolderInfo d) {
@@ -67,8 +70,8 @@ public class FolderInfo implements Serializable {
         return connection;
     }
 
-    public void setConnection(String driver) {
-        this.connection = driver;
+    public void setConnection(String connection) {
+        this.connection = connection;
     }
 
 }

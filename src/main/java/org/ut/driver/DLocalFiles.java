@@ -43,13 +43,23 @@ public class DLocalFiles implements Driver {
     }
 
     @Override
-    public FolderInfo list(String path) throws IOException {
+    public FolderInfo list(String path, int depth) throws IOException {
         FolderInfo f = new FolderInfo();
-        File[] files = FileTools.getFilesFolder(this.fullBasePath + File.separatorChar + path);
+        File[] files = FileTools.getFilesFolder(FilenameUtils.normalize(this.fullBasePath + File.separatorChar + path));
         if (files != null) {
             for (File file : files) {
                 if (file.isDirectory()) {
-                    f.addFolder(this.list(path + File.separatorChar + file.getName()));
+                    if (depth > 0)
+                        depth -= 1;
+                    if (depth != 0)
+                        f.addFolder(this.list(path + File.separatorChar + file.getName(), depth));
+                    else {
+                        FolderInfo tmp = new FolderInfo();
+                        tmp.setName(file.getName());
+                        tmp.setConnection(this.getName());
+                        tmp.setPath(path + File.separatorChar + file.getName());
+                        f.addFolder(tmp);
+                    }
                 } else {
                     f.addFile(file, path);
                 }
@@ -62,4 +72,13 @@ public class DLocalFiles implements Driver {
         return f;
     }
 
+    @Override
+    public boolean isFile(String path) throws IOException {
+        return FileTools.isFile(this.fullBasePath + File.separatorChar + path);
+    }
+
+    @Override
+    public String getFullPath() {
+        return this.fullBasePath;
+    }
 }

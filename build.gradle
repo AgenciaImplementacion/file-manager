@@ -25,6 +25,8 @@ targetCompatibility = 1.8
 
 repositories {
     mavenCentral()
+    maven { url "http://m2.objectdb.com" }
+    maven { url "https://repository.jboss.org/nexus/content/repositories/releases" }
 }
 
 dependencies {
@@ -45,4 +47,11 @@ dependencies {
     compile group: 'org.apache.commons', name: 'commons-io', version: '1.3.2'
 
     compile 'com.google.apis:google-api-services-drive:v3-rev81-1.22.0'
+    // https://mvnrepository.com/artifact/org.hibernate.javax.persistence/hibernate-jpa-2.0-api
+    //compile group: 'org.hibernate.javax.persistence', name: 'hibernate-jpa-2.0-api', version: '1.0.1.Final'
+
+    compile("org.springframework.boot:spring-boot-starter-data-jpa")
+    compile("com.h2database:h2")
+
+    compile group: 'com.objectdb', name: 'objectdb', version: '2.7.1_09'
 }

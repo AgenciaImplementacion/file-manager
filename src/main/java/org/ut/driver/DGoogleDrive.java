@@ -30,7 +30,17 @@ public class DGoogleDrive implements Driver {
     }
 
     @Override
-    public FolderInfo list(String path) throws IOException {
+    public FolderInfo list(String path, int depth) throws IOException {
         return null;
+    }
+
+    @Override
+    public boolean isFile(String path) throws IOException {
+        return false;
+    }
+
+    @Override
+    public String getFullPath() {
+        return "";
     }
 }

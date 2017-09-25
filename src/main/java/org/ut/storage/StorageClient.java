@@ -75,12 +75,36 @@ public class StorageClient {
     }
 
     public FolderInfo list(String path, String driver) throws DriverNotFoundException, IOException {
-        if (this.drivers.containsKey(driver)) {
-            Driver d = this.drivers.get(driver);
-            return d.list(path);
+        return this.list(path, driver, -1);
+    }
+
+    public FolderInfo list(String path, String connection, int depth) throws DriverNotFoundException, IOException {
+        if (this.drivers.containsKey(connection)) {
+            Driver d = this.drivers.get(connection);
+            return d.list(path, depth);
         } else {
-            LOGGER.log(Level.SEVERE, "Error: (StorageClient.list.DriverNotFound) " + driver);
-            throw new DriverNotFoundException("Error: driver " + driver + " not found.");
+            LOGGER.log(Level.SEVERE, "Error: (StorageClient.list.DriverNotFound) " + connection);
+            throw new DriverNotFoundException("Error: connection " + connection + " not found.");
+        }
+    }
+
+    public boolean isFile(String path, String connection) throws IOException, DriverNotFoundException {
+        if (this.drivers.containsKey(connection)) {
+            Driver d = this.drivers.get(connection);
+            return d.isFile(path);
+        } else {
+            LOGGER.log(Level.SEVERE, "Error: (StorageClient.list.DriverNotFound) " + connection);
+            throw new DriverNotFoundException("Error: connection " + connection + " not found.");
+        }
+    }
+
+    public String getFullPath(String connection) throws DriverNotFoundException {
+        if (this.drivers.containsKey(connection)) {
+            Driver d = this.drivers.get(connection);
+            return d.getFullPath();
+        } else {
+            LOGGER.log(Level.SEVERE, "Error: (StorageClient.list.DriverNotFound) " + connection);
+            throw new DriverNotFoundException("Error: connection " + connection + " not found.");
         }
     }
 }

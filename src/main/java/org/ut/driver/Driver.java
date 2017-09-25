@@ -8,7 +8,14 @@ import java.util.Properties;
 
 public interface Driver {
     String getName();
+
     void setConfig(Properties config);
+
     boolean store(MultipartFile file, String path, boolean rewrite) throws IOException;
-    FolderInfo list(String path) throws IOException;
+
+    FolderInfo list(String path, int depth) throws IOException;
+
+    boolean isFile(String path) throws IOException;
+
+    String getFullPath();
 }

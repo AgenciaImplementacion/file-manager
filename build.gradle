@@ -29,29 +29,16 @@ repositories {
     maven { url "https://repository.jboss.org/nexus/content/repositories/releases" }
 }
 
+if (!hasProperty('mainClass')) {
+    ext.mainClass = 'org.ut.web.Application'
+}
+
 dependencies {
-    //testCompile group: 'junit', name: 'junit', version: '4.12'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
     testCompile('org.springframework.boot:spring-boot-starter-test')
-    // tag::jetty[]
-    compile("org.springframework.boot:spring-boot-starter-web") {
-        //exclude module: "spring-boot-starter-tomcat"
-    }
-    //compile("org.springframework.boot:spring-boot-starter-jetty")
-    // end::jetty[]
-    // tag::actuator[]
+    compile("org.springframework.boot:spring-boot-starter-web") { }
     compile("org.springframework.boot:spring-boot-starter-actuator")
-    // end::actuator[]
-    // https://mvnrepository.com/artifact/commons-fileupload/commons-fileupload
     compile group: 'commons-fileupload', name: 'commons-fileupload', version: '1.2'
-    // https://mvnrepository.com/artifact/org.apache.commons/commons-io
     compile group: 'org.apache.commons', name: 'commons-io', version: '1.3.2'
-
     compile 'com.google.apis:google-api-services-drive:v3-rev81-1.22.0'
-    // https://mvnrepository.com/artifact/org.hibernate.javax.persistence/hibernate-jpa-2.0-api
-    //compile group: 'org.hibernate.javax.persistence', name: 'hibernate-jpa-2.0-api', version: '1.0.1.Final'
-
-    compile("org.springframework.boot:spring-boot-starter-data-jpa")
-    compile("com.h2database:h2")
-
-    compile group: 'com.objectdb', name: 'objectdb', version: '2.7.1_09'
 }

@@ -9,16 +9,7 @@ import org.ut.driver.Driver;
 import org.ut.driver.DriverFactory;
 import org.ut.driver.DriverNotFoundException;
 import org.ut.entity.FolderInfo;
-import org.ut.util.ConfigTools;
-import org.ut.util.FileTools;
-
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.FileAlreadyExistsException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -48,9 +39,9 @@ public class StorageClient {
         PathMatchingResourcePatternResolver a = new PathMatchingResourcePatternResolver();
         try {
             Resource[] r = a.getResources("*");
-            for (int i = 0; i < r.length; i++) {
-                if (FilenameUtils.getExtension(r[i].getFilename()).equals("properties") && !r[i].getFilename().equals("application.properties")) {
-                    Driver d = DriverFactory.getDriver(r[i].getInputStream());
+            for (Resource r1 : r) {
+                if (FilenameUtils.getExtension(r1.getFilename()).equals("properties") && !r1.getFilename().equals("application.properties")) {
+                    Driver d = DriverFactory.getDriver(r1.getInputStream());
                     this.drivers.put(d.getName(), d);
                     this.keysDrivers.add(d.getName());
                 }
@@ -58,6 +49,7 @@ public class StorageClient {
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Error: (StorageClient.StorageClient.IOException) " + e.getMessage(), e);
         }
+        System.out.print(this.drivers);
     }
 
     public ArrayList<String> getDriverList() {

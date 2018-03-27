@@ -24,9 +24,9 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 repositories {
-    mavenCentral()
     maven { url "http://m2.objectdb.com" }
     maven { url "https://repository.jboss.org/nexus/content/repositories/releases" }
+    mavenCentral();
 }
 
 dependencies {
@@ -53,5 +53,5 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-data-jpa")
     compile("com.h2database:h2")
 
-    compile group: 'com.objectdb', name: 'objectdb', version: '2.7.1_09'
+    compile group: 'com.objectdb', name: 'objectdb', version: '2.7.4'
 }

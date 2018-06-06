@@ -9,7 +9,7 @@ After=network.target
 #no funciona Enviroment
 #Enviroment=interlis_uploadedfiles=/tmp/uploads
 #Enviroment=interlis_ilidir=/tmp/ili
-ExecStart=/bin/bash -c "java -jar /opt/ilivalidator/file-manager-0.1.0.jar"
+ExecStart=/bin/bash -c "java -jar /opt/file-manager/file-manager-0.1.0.jar"
 Type=simple
 #ExecStop=/usr/lib/systemd/scripts/apachectl stop
 #RemainAfterExit=yes

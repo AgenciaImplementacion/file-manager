@@ -9,6 +9,7 @@ import java.util.List;
 public class APIVersionsResponse implements Serializable {
 
     private List<VersionInfo> versions;
+    private String id = "IDEATFileManager";
 
     public APIVersionsResponse() {
         this.versions = new ArrayList<>();
@@ -24,6 +25,13 @@ public class APIVersionsResponse implements Serializable {
 
     public void addVersion(String name, String url) {
         this.versions.add(new VersionInfo(name, url));
+    }
+
+    /**
+     * @return the id
+     */
+    public String getId() {
+        return id;
     }
 
 }

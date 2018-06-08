@@ -19,3 +19,12 @@ hs_err_pid*
 .nb-gradle/
 
 .DS_Store
+
+# Custom properties files
+/src/main/resources/localfiles.properties
+
+# STS
+/.classpath
+/.project
+/.settings/
+/bin/

@@ -1,13 +1,24 @@
 package org.ut.web;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
+import java.util.Calendar;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.io.IOUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.ut.driver.DLocalFiles;
 import org.ut.driver.DriverNotFoundException;
@@ -16,29 +27,28 @@ import org.ut.response.FileServicesResponse;
 import org.ut.response.FolderListResponse;
 import org.ut.response.MessageResponse;
 import org.ut.storage.StorageClient;
-import java.io.IOException;
-import java.nio.file.FileAlreadyExistsException;
-import java.util.Calendar;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.ut.util.RandomString;
 
 @RestController
-@RequestMapping("/api/v1")
+@PropertySource("classpath:/application.properties")
+@RequestMapping("/${org.ut.web.endpoint}/v1")
 public class WSFileController {
+	
+	@Value("${org.ut.web.endpoint}")
+	private String endpoint;
 
     private final static Logger LOGGER = Logger.getLogger(DLocalFiles.class.getName());
-
+    
     @RequestMapping(value = {"", "/"})
     public ResponseEntity<FileServicesResponse> services() {
         FileServicesResponse r = new FileServicesResponse();
-        r.addService("Upload file", "/api/v1/file", ServiceInfo.M_POST);
-        r.addService("Update file", "/api/v1/file", ServiceInfo.M_PUT);
-        r.addService("Download file", "/api/v1/file/{id}", ServiceInfo.M_GET);
-        r.addService("List all files", "/api/v1/file", ServiceInfo.M_GET);
-        r.addService("List a segment files", "/api/v1/file/{driver}/{depth}", ServiceInfo.M_GET);
-        r.addService("File information", "/api/v1/file/info/{id}", ServiceInfo.M_GET);
-        r.addService("Delete File", "/api/v1/file/{id}", ServiceInfo.M_DELETE);
+        r.addService("Upload file", "/" + endpoint + "/v1/file", ServiceInfo.M_POST);
+        r.addService("Update file", "/" + endpoint + "/v1/file", ServiceInfo.M_PUT);
+        r.addService("Download file", "/" + endpoint + "/v1/file/{id}", ServiceInfo.M_GET);
+        r.addService("List all files", "/" + endpoint + "/v1/file", ServiceInfo.M_GET);
+        r.addService("List a segment files", "/" + endpoint + "/v1/file/{driver}/{depth}", ServiceInfo.M_GET);
+        r.addService("File information", "/" + endpoint + "/v1/file/info/{id}", ServiceInfo.M_GET);
+        r.addService("Delete File", "/" + endpoint + "/v1/file/{id}", ServiceInfo.M_DELETE);
         return new ResponseEntity<>(r, HttpStatus.OK);
     }
 

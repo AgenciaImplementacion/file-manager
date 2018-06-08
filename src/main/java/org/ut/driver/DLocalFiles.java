@@ -34,9 +34,9 @@ public class DLocalFiles implements Driver {
         return this.config.getProperty("name");
     }
 
-    public boolean store(MultipartFile file, String path, boolean rewrite) throws IOException {
+    public boolean store(MultipartFile file, String name, String path, boolean rewrite) throws IOException {
         if (!file.isEmpty()) {
-            FileTools.saveFile(file, this.fullBasePath + File.separatorChar + path, rewrite);
+            FileTools.saveFile(file, name, this.fullBasePath + File.separatorChar + path, rewrite);
             return true;
         }
         return false;

@@ -1,5 +1,6 @@
 package org.ut.web;
 
+import java.io.File;
 import org.apache.commons.io.IOUtils;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
@@ -17,8 +18,10 @@ import org.ut.response.MessageResponse;
 import org.ut.storage.StorageClient;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
+import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.ut.util.RandomString;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -41,16 +44,27 @@ public class WSFileController {
 
     @RequestMapping(value = "/file", method = RequestMethod.POST)
     public ResponseEntity<MessageResponse> upload(@RequestParam("file") MultipartFile file,
-                                                  @RequestParam("path") String path,
-                                                  @RequestParam("driver") String driver) {
+            @RequestParam("driver") String driver) {
         MessageResponse r = new MessageResponse();
         StorageClient st = StorageClient.getInstance();
         try {
-            st.store(file, path, driver, false);
+            int y = Calendar.getInstance().get(Calendar.YEAR);
+            int m = Calendar.getInstance().get(Calendar.MONTH);
+            int d = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
+            int h = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+            int mi = Calendar.getInstance().get(Calendar.MINUTE);
+            String s = (new RandomString(5)).nextString();
+            String base_url = String.valueOf(y) + File.separatorChar + String.valueOf(m) + File.separatorChar + String.valueOf(d);
+            while (true) {
+                try {
+                    st.store(file, h + "" + m + s, base_url, driver, false);
+                    break;
+                } catch (FileAlreadyExistsException e) {
+                    s = (new RandomString(5)).nextString();
+                }
+            }
+            r.setUrl("/v1/file/" + driver + "?id=" + base_url.replaceAll(String.valueOf(File.separatorChar), ".") + "." + h + m + s);
             r.setOk("Success");
-        } catch (FileAlreadyExistsException e) {
-            r.setError("File already exists");
-            LOGGER.log(Level.SEVERE, "Error: (DLocalFiles.store.FileNotFoundException) " + e.getMessage(), e);
         } catch (IOException e) {
             r.setError(e.getMessage());
             LOGGER.log(Level.SEVERE, "Error: (DLocalFiles.store.IOException) " + e.getMessage(), e);
@@ -63,12 +77,15 @@ public class WSFileController {
 
     @RequestMapping(value = "/file", method = RequestMethod.PUT)
     public ResponseEntity<MessageResponse> update(@RequestParam("file") MultipartFile file,
-                                                  @RequestParam("path") String path,
-                                                  @RequestParam("driver") String driver) {
+            @RequestParam("id") String id,
+            @RequestParam("driver") String driver) {
         MessageResponse r = new MessageResponse();
         StorageClient st = StorageClient.getInstance();
+        String[] s = id.split(".");
+        String name = s[s.length - 1];
+        String path = id.replaceAll(".", String.valueOf(File.separatorChar)).replaceAll(File.separatorChar + name, "");
         try {
-            st.store(file, path, driver, true);
+            st.store(file, name, path, driver, true);
             r.setOk("Success");
         } catch (FileAlreadyExistsException e) {
             r.setError("File already exists");
@@ -125,12 +142,16 @@ public class WSFileController {
     @RequestMapping(value = "/file/{connection}", method = RequestMethod.GET)
     public ResponseEntity<?> listFromADriverPathOrDownload(
             @PathVariable("connection") String connection,
-            @RequestParam("path") String path
+            @RequestParam("id") String id
     ) {
-        if (!path.substring(0, 1).equals("/"))
+        String path = id.replaceAll("\\.", String.valueOf(File.separatorChar))+".zip";
+        if (!path.substring(0, 1).equals("/")) {
             path = "/" + path;
-        if (path.equals("/"))
+        }
+        if (path.equals("/")) {
             path = "";
+        }
+        System.out.println("Path: "+path);
         FolderListResponse r = new FolderListResponse();
         StorageClient c = StorageClient.getInstance();
         try {

@@ -6,6 +6,7 @@ public class MessageResponse implements Serializable {
 
     private boolean status;
     private String message;
+    private String url = "";
 
     public MessageResponse() {
         this.status = false;
@@ -17,7 +18,7 @@ public class MessageResponse implements Serializable {
         this.setStatus(true);
     }
 
-    public void setError(String message){
+    public void setError(String message) {
         this.message = message;
         this.setStatus(false);
     }
@@ -36,5 +37,19 @@ public class MessageResponse implements Serializable {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    /**
+     * @return the id
+     */
+    public String getUrl() {
+        return url;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

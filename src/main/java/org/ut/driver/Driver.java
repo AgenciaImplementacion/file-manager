@@ -11,7 +11,7 @@ public interface Driver {
 
     void setConfig(Properties config);
 
-    boolean store(MultipartFile file, String path, boolean rewrite) throws IOException;
+    boolean store(MultipartFile file, String name, String path, boolean rewrite) throws IOException;
 
     FolderInfo list(String path, int depth) throws IOException;
 

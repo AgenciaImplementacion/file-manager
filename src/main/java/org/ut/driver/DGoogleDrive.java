@@ -25,7 +25,7 @@ public class DGoogleDrive implements Driver {
     }
 
     @Override
-    public boolean store(MultipartFile file, String path, boolean rewrite) {
+    public boolean store(MultipartFile file, String name, String path, boolean rewrite) {
         return false;
     }
 

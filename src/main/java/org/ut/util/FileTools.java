@@ -10,10 +10,8 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.logging.Level;
 import java.util.zip.*;
 
-import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -46,18 +44,18 @@ public class FileTools {
         return content;
     }
 
-    public static void saveFile(MultipartFile file, String path, boolean rewrite) throws IOException {
+    public static void saveFile(MultipartFile file, String name, String path, boolean rewrite) throws IOException {
         String fileName = file.getOriginalFilename();
         new File(path).mkdirs();
-        File f = new File(path + File.separatorChar + fileName + ".zip");
+        File f = new File(path + File.separatorChar + name + ".zip");
         if (f.exists() && rewrite) {
             f.delete();
         }
         if (f.exists() && !rewrite) {
-            throw new FileAlreadyExistsException("Error: " + fileName + " al ready exist");
+            throw new FileAlreadyExistsException("Error: " + name + " al ready exist");
         }
         ZipOutputStream o = new ZipOutputStream(new FileOutputStream(f));
-        ZipEntry e = new ZipEntry(fileName);
+        ZipEntry e = new ZipEntry(file.getOriginalFilename());
         o.putNextEntry(e);
         byte[] data = file.getBytes();
         o.write(data, 0, data.length);

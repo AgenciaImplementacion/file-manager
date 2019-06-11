@@ -45,7 +45,7 @@ public class FileTools {
     }
 
     public static void saveFile(MultipartFile file, String name, String path, boolean rewrite) throws IOException {
-        String fileName = file.getOriginalFilename();
+        // String fileName = file.getOriginalFilename();
         new File(path).mkdirs();
         File f = new File(path + File.separatorChar + name + ".zip");
         if (f.exists() && rewrite) {
@@ -87,6 +87,30 @@ public class FileTools {
         if (f.isFile())
             return true;
         return false;
+    }
+
+    /**
+     * Unzip it
+     * 
+     * @param zipFile InputStream zip file
+     */
+    public static HashMap<String, byte[]> unZipIt(InputStream zipFile) {
+        HashMap<String, byte[]> files = new HashMap<>();
+        try {
+            ZipInputStream zis = new ZipInputStream(zipFile);
+            ZipEntry ze = zis.getNextEntry();
+            while (ze != null) {
+                String fileName = ze.getName();
+                byte[] buffer = zis.readAllBytes();
+                files.put(fileName, buffer);
+                ze = zis.getNextEntry();
+            }
+            zis.closeEntry();
+            zis.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return files;
     }
 
 }

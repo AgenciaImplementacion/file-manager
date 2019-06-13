@@ -5,6 +5,7 @@ import java.util.Map;
 
 public class FileInfo implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     private String name;
     private String path;
     private long size;

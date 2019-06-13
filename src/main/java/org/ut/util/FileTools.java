@@ -11,7 +11,6 @@ import java.nio.file.attribute.FileTime;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.zip.*;
-
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -111,6 +110,44 @@ public class FileTools {
             ex.printStackTrace();
         }
         return files;
+    }
+
+    public static void generateThumbnail(MultipartFile input, String path) throws IOException {
+
+        String format = ".png";
+
+        String ext = FilenameUtils.getExtension(input.getOriginalFilename());
+
+        String[] images = { "png", "jpg", "gif", "bmp", "tif", "pdf" };
+        if (Arrays.stream(images).anyMatch(ext::equals)) {
+            File f = new File("/tmp/" + input.getOriginalFilename());
+            input.transferTo(f);
+            ProcessBuilder processBuilder = new ProcessBuilder();
+            processBuilder.command("bash", "-c", "convert -resize x96 /tmp/" + input.getOriginalFilename() + "[0] /tmp/"
+                    + input.getOriginalFilename() + format);
+            try {
+                Process process = processBuilder.start();
+                StringBuilder output = new StringBuilder();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    output.append(line + "\n");
+                }
+                int exitVal = process.waitFor();
+                if (exitVal == 0) {
+                    File t = new File("/tmp/" + input.getOriginalFilename() + format);
+                    t.renameTo(new File(path + format));
+                } else {
+                    System.out.println("Error: " + output.toString());
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            f.delete();
+        }
     }
 
 }

@@ -4,14 +4,13 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.util.Calendar;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.io.IOUtils;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -29,7 +28,6 @@ import org.ut.response.FileServicesResponse;
 import org.ut.response.FolderListResponse;
 import org.ut.response.MessageResponse;
 import org.ut.storage.StorageClient;
-import org.ut.util.FileTools;
 import org.ut.util.RandomString;
 
 @RestController
@@ -158,36 +156,29 @@ public class WSFileController {
 
     @RequestMapping(value = "/file/{connection}", method = RequestMethod.GET)
     public ResponseEntity<?> listFromADriverPathOrDownload(@PathVariable("connection") String connection,
-            @RequestParam("id") String id) {
-        String path = id.replaceAll("\\.", String.valueOf(File.separatorChar)) + ".zip";
+            @RequestParam("id") String id, @RequestParam("thumbnail") Optional<Boolean> thumbnail) {
+        String path = id.replaceAll("\\.", String.valueOf(File.separatorChar));
         if (!path.substring(0, 1).equals("/")) {
             path = "/" + path;
         }
         if (path.equals("/")) {
             path = "";
         }
-        // System.out.println("Path: " + path);
         FolderListResponse r = new FolderListResponse();
         StorageClient c = StorageClient.getInstance();
         try {
             if (c.isFile(path, connection)) {
-                FileSystemResource file = new FileSystemResource(c.getFullPath(connection) + path);
-                String fname = file.getFilename();
-                HashMap<String, byte[]> unzipfiles = FileTools.unZipIt(file.getInputStream());
-                byte[] content = new byte[0];
-                if (unzipfiles.size() == 1) {
-                    for (String i : unzipfiles.keySet()) {
-                        content = unzipfiles.get(i);
-                        fname = i;
-                        break;
-                    }
-                } else {
-                    content = IOUtils.toByteArray(file.getInputStream());
+                Map<String, Object> f = c.getFile(path, connection, (thumbnail.isPresent() ? thumbnail.get() : false));
+                byte[] content = (byte[]) f.get("content");
+                if(thumbnail.isPresent() && thumbnail.get()){
+                    return ResponseEntity.ok().contentLength(content.length)
+                    .contentType(MediaType.parseMediaType("image/png")).body(content);
+                }else{
+                    HttpHeaders responseHeaders = new HttpHeaders();
+                    responseHeaders.add("Content-Disposition", "attachment; filename=\"" + f.get("name") + "\"");
+                    return ResponseEntity.ok().headers(responseHeaders).contentLength(content.length)
+                    .contentType(MediaType.parseMediaType("application/octet-stream")).body(content);
                 }
-                HttpHeaders responseHeaders = new HttpHeaders();
-                responseHeaders.add("Content-Disposition", "attachment; filename=\"" + fname + "\"");
-                return ResponseEntity.ok().headers(responseHeaders).contentLength(content.length)
-                        .contentType(MediaType.parseMediaType("application/octet-stream")).body(content);
             } else {
                 r.addData(c.list(path, connection, 1));
                 r.setOk("Success");

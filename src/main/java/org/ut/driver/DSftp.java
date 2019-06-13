@@ -4,6 +4,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.ut.entity.FolderInfo;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Properties;
 
 public class DSftp implements Driver {
@@ -42,5 +43,10 @@ public class DSftp implements Driver {
     @Override
     public String getFullPath() {
         return "";
+    }
+
+    @Override
+    public Map<String, Object> getFile(String path, Boolean thumbnail) throws IOException {
+        return null;
     }
 }

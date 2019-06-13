@@ -8,6 +8,7 @@ import java.util.List;
 
 public class APIVersionsResponse implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     private List<VersionInfo> versions;
     private String id = "IDEATFileManager";
 

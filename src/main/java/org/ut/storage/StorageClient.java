@@ -99,4 +99,14 @@ public class StorageClient {
             throw new DriverNotFoundException("Error: connection " + connection + " not found.");
         }
     }
+
+    public Map<String, Object> getFile(String path, String connection, Boolean thumbnail)  throws IOException, DriverNotFoundException {
+        if (this.drivers.containsKey(connection)) {
+            Driver d = this.drivers.get(connection);
+            return d.getFile(path, thumbnail);
+        } else {
+            LOGGER.log(Level.SEVERE, "Error: (StorageClient.list.DriverNotFound) " + connection);
+            throw new DriverNotFoundException("Error: connection " + connection + " not found.");
+        }
+    }
 }

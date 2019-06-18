@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.ut.entity.FolderInfo;
 import org.ut.util.FileTools;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -90,25 +91,56 @@ public class DLocalFiles implements Driver {
     public Map<String, Object> getFile(String path, Boolean thumbnail) throws IOException {
         Map<String, Object> response = new HashMap<>();
         String ext = ".zip";
-        if (thumbnail) {
-            ext = ".png";
-        }
-        FileSystemResource file = new FileSystemResource(this.fullBasePath + path + ext);
-        String fname = file.getFilename();
         byte[] content = new byte[0];
-        if (ext.equals(".zip")) {
-            HashMap<String, byte[]> unzipfiles = FileTools.unZipIt(file.getInputStream());
-            if (unzipfiles.size() == 1) {
-                for (String i : unzipfiles.keySet()) {
-                    content = unzipfiles.get(i);
-                    fname = i;
-                    break;
+        String fname = "";
+        if (thumbnail) {
+            File f = new File(this.fullBasePath + path + ".png");
+            if (!f.isFile()) {
+                f = new File(this.fullBasePath + path + ".zip");
+                if (f.isFile()) {
+                    FileSystemResource file = new FileSystemResource(this.fullBasePath + path + ".zip");
+                    HashMap<String, byte[]> unzipfiles = FileTools.unZipIt(file.getInputStream());
+                    if (unzipfiles.size() == 1) {
+                        for (String i : unzipfiles.keySet()) {
+                            ext = FilenameUtils.getExtension(i);
+                            f = new File(this.fullBasePath + "/assets/" + ext + ".png");
+                            if (!f.isFile()) {
+                                f = new File(this.fullBasePath + "/assets/any.png");
+                            }
+                            break;
+                        }
+                    } else {
+                        f = new File(this.fullBasePath + "/assets/zip.png");
+                    }
+                } else {
+                    f = new File(this.fullBasePath + "/assets/error.png");
                 }
-            } else {
-                content = IOUtils.toByteArray(file.getInputStream());
             }
-        }else{
-            content = IOUtils.toByteArray(file.getInputStream());
+            FileInputStream fs = null;
+            try {
+                fs = new FileInputStream(f);
+                content = fs.readAllBytes();
+            } finally {
+                if (fs != null) {
+                    fs.close();
+                }
+            }
+
+        } else {
+            FileSystemResource file = new FileSystemResource(this.fullBasePath + path + ext);
+            fname = file.getFilename();
+            if (ext.equals(".zip")) {
+                HashMap<String, byte[]> unzipfiles = FileTools.unZipIt(file.getInputStream());
+                if (unzipfiles.size() == 1) {
+                    for (String i : unzipfiles.keySet()) {
+                        content = unzipfiles.get(i);
+                        fname = i;
+                        break;
+                    }
+                } else {
+                    content = IOUtils.toByteArray(file.getInputStream());
+                }
+            }
         }
         response.put("name", fname);
         response.put("content", content);

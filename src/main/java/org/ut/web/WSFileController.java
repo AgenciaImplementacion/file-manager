@@ -166,31 +166,43 @@ public class WSFileController {
         }
         FolderListResponse r = new FolderListResponse();
         StorageClient c = StorageClient.getInstance();
-        try {
-            if (c.isFile(path, connection)) {
+        if (thumbnail.isPresent()) {
+            try {
                 Map<String, Object> f = c.getFile(path, connection, (thumbnail.isPresent() ? thumbnail.get() : false));
                 byte[] content = (byte[]) f.get("content");
-                if(thumbnail.isPresent() && thumbnail.get()){
-                    return ResponseEntity.ok().contentLength(content.length)
-                    .contentType(MediaType.parseMediaType("image/png")).body(content);
-                }else{
+                return ResponseEntity.ok().contentLength(content.length)
+                        .contentType(MediaType.parseMediaType("image/png")).body(content);
+            } catch (DriverNotFoundException e) {
+                r.setError(e.getMessage());
+                LOGGER.log(Level.SEVERE, "Error: (DLocalFiles.list.DriverNotFoundException) " + e.getMessage(), e);
+            } catch (IOException e) {
+                r.setError(e.getMessage());
+                LOGGER.log(Level.SEVERE, "Error: (DLocalFiles.list.IOException) " + e.getMessage(), e);
+            }
+            return new ResponseEntity<>(r, HttpStatus.OK);
+        } else {
+            try {
+                if (c.isFile(path, connection)) {
+                    Map<String, Object> f = c.getFile(path, connection,
+                            (thumbnail.isPresent() ? thumbnail.get() : false));
+                    byte[] content = (byte[]) f.get("content");
                     HttpHeaders responseHeaders = new HttpHeaders();
                     responseHeaders.add("Content-Disposition", "attachment; filename=\"" + f.get("name") + "\"");
                     return ResponseEntity.ok().headers(responseHeaders).contentLength(content.length)
-                    .contentType(MediaType.parseMediaType("application/octet-stream")).body(content);
+                            .contentType(MediaType.parseMediaType("application/octet-stream")).body(content);
+                } else {
+                    r.addData(c.list(path, connection, 1));
+                    r.setOk("Success");
                 }
-            } else {
-                r.addData(c.list(path, connection, 1));
-                r.setOk("Success");
+            } catch (DriverNotFoundException e) {
+                r.setError(e.getMessage());
+                LOGGER.log(Level.SEVERE, "Error: (DLocalFiles.list.DriverNotFoundException) " + e.getMessage(), e);
+            } catch (IOException e) {
+                r.setError(e.getMessage());
+                LOGGER.log(Level.SEVERE, "Error: (DLocalFiles.list.IOException) " + e.getMessage(), e);
             }
-        } catch (DriverNotFoundException e) {
-            r.setError(e.getMessage());
-            LOGGER.log(Level.SEVERE, "Error: (DLocalFiles.list.DriverNotFoundException) " + e.getMessage(), e);
-        } catch (IOException e) {
-            r.setError(e.getMessage());
-            LOGGER.log(Level.SEVERE, "Error: (DLocalFiles.list.IOException) " + e.getMessage(), e);
+            return new ResponseEntity<>(r, HttpStatus.OK);
         }
-        return new ResponseEntity<>(r, HttpStatus.OK);
     }
 
 }

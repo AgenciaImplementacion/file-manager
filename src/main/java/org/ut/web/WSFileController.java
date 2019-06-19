@@ -157,6 +157,7 @@ public class WSFileController {
     @RequestMapping(value = "/file/{connection}", method = RequestMethod.GET)
     public ResponseEntity<?> listFromADriverPathOrDownload(@PathVariable("connection") String connection,
             @RequestParam("id") String id, @RequestParam("thumbnail") Optional<Boolean> thumbnail) {
+
         String path = id.replaceAll("\\.", String.valueOf(File.separatorChar));
         if (!path.substring(0, 1).equals("/")) {
             path = "/" + path;
@@ -164,6 +165,7 @@ public class WSFileController {
         if (path.equals("/")) {
             path = "";
         }
+
         FolderListResponse r = new FolderListResponse();
         StorageClient c = StorageClient.getInstance();
         if (thumbnail.isPresent()) {
@@ -174,7 +176,7 @@ public class WSFileController {
                         .contentType(MediaType.parseMediaType("image/png")).body(content);
             } catch (DriverNotFoundException e) {
                 r.setError(e.getMessage());
-                LOGGER.log(Level.SEVERE, "Error: (DLocalFiles.list.DriverNotFoundException) " + e.getMessage(), e);
+                LOGGER.log(Level.SEVERE, "Error: (DLocalFiles.list.DriverNotFoun dException) " + e.getMessage(), e);
             } catch (IOException e) {
                 r.setError(e.getMessage());
                 LOGGER.log(Level.SEVERE, "Error: (DLocalFiles.list.IOException) " + e.getMessage(), e);

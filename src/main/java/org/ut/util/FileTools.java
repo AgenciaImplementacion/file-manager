@@ -98,14 +98,24 @@ public class FileTools {
         try {
             ZipInputStream zis = new ZipInputStream(zipFile);
             ZipEntry ze = zis.getNextEntry();
-            while (ze != null) {
-                String fileName = ze.getName();
-                byte[] buffer = zis.readAllBytes();
-                files.put(fileName, buffer);
-                ze = zis.getNextEntry();
+            if (zis != null) {
+                while (ze != null) {
+                    String fileName = ze.getName();
+                    int bytesToRead = zis.available();
+                    if (bytesToRead != -1) {
+                        byte data[] = new byte[1024];
+                        int len = 0;
+                        ByteArrayOutputStream out = new ByteArrayOutputStream();
+                        while ((len = zis.read(data)) > 0) {
+                            out.write(data, 0, len);
+                        }
+                        files.put(fileName, out.toByteArray());
+                    }
+                    ze = zis.getNextEntry();
+                }
+                zis.closeEntry();
+                zis.close();
             }
-            zis.closeEntry();
-            zis.close();
         } catch (IOException ex) {
             ex.printStackTrace();
         }

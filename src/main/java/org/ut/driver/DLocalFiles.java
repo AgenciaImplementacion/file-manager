@@ -6,6 +6,8 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.web.multipart.MultipartFile;
 import org.ut.entity.FolderInfo;
 import org.ut.util.FileTools;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -119,7 +121,13 @@ public class DLocalFiles implements Driver {
             FileInputStream fs = null;
             try {
                 fs = new FileInputStream(f);
-                content = fs.readAllBytes();
+                byte data[] = new byte[1024];
+                int len = 0;
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                while ((len = fs.read(data)) > 0) {
+                    out.write(data, 0, len);
+                }
+                content = out.toByteArray();
             } finally {
                 if (fs != null) {
                     fs.close();

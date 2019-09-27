@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 public class MessageResponse implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     private boolean status;
     private String message;
     private String url = "";

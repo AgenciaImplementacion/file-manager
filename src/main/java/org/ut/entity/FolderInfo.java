@@ -10,6 +10,7 @@ import java.util.List;
 
 public class FolderInfo implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     private List<FileInfo> files;
     private List<FolderInfo> folders;
     private String path;

@@ -8,6 +8,7 @@ import java.util.List;
 
 public class FolderListResponse implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     private boolean status;
     private String message;
     private List<FolderInfo> data;

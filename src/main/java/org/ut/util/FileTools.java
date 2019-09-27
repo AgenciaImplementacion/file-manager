@@ -11,7 +11,6 @@ import java.nio.file.attribute.FileTime;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.zip.*;
-
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -45,7 +44,7 @@ public class FileTools {
     }
 
     public static void saveFile(MultipartFile file, String name, String path, boolean rewrite) throws IOException {
-        String fileName = file.getOriginalFilename();
+        // String fileName = file.getOriginalFilename();
         new File(path).mkdirs();
         File f = new File(path + File.separatorChar + name + ".zip");
         if (f.exists() && rewrite) {
@@ -87,6 +86,85 @@ public class FileTools {
         if (f.isFile())
             return true;
         return false;
+    }
+
+    /**
+     * Unzip it
+     * 
+     * @param zipFile InputStream zip file
+     */
+    public static HashMap<String, byte[]> unZipIt(InputStream zipFile) {
+        HashMap<String, byte[]> files = new HashMap<>();
+        try {
+            ZipInputStream zis = new ZipInputStream(zipFile);
+            ZipEntry ze = zis.getNextEntry();
+            if (zis != null) {
+                while (ze != null) {
+                    String fileName = ze.getName();
+                    int bytesToRead = zis.available();
+                    if (bytesToRead != -1) {
+                        byte data[] = new byte[1024];
+                        int len = 0;
+                        ByteArrayOutputStream out = new ByteArrayOutputStream();
+                        while ((len = zis.read(data)) > 0) {
+                            out.write(data, 0, len);
+                        }
+                        files.put(fileName, out.toByteArray());
+                    }
+                    ze = zis.getNextEntry();
+                }
+                zis.closeEntry();
+                zis.close();
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return files;
+    }
+
+    public static void generateThumbnail(MultipartFile input, String path) throws IOException {
+
+        String format = ".png";
+
+        String ext = FilenameUtils.getExtension(input.getOriginalFilename());
+
+        String[] images = { "png", "jpg", "jpeg", "gif", "bmp", "tif", "pdf" };
+        if (Arrays.stream(images).anyMatch(ext::equals)) {
+            File f = new File("/tmp/" + input.getOriginalFilename());
+            input.transferTo(f);
+            ProcessBuilder processBuilder = new ProcessBuilder();
+            String command = "convert -resize x120 /tmp/" + input.getOriginalFilename() + "[0] /tmp/"
+                    + input.getOriginalFilename() + "120" + format+ " & convert -resize x96 /tmp/" + input.getOriginalFilename() + "[0] /tmp/"
+                    + input.getOriginalFilename() + "96" + format+" & convert -resize x60 /tmp/" + input.getOriginalFilename() + "[0] /tmp/"
+                    + input.getOriginalFilename() + "60" + format;
+            processBuilder.command("bash", "-c", command);
+            try {
+                Process process = processBuilder.start();
+                StringBuilder output = new StringBuilder();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    output.append(line + "\n");
+                }
+                int exitVal = process.waitFor();
+                if (exitVal == 0) {
+                    File t = new File("/tmp/" + input.getOriginalFilename() + "120" + format);
+                    t.renameTo(new File(path + "120" + format));
+                    t = new File("/tmp/" + input.getOriginalFilename() + "96" + format);
+                    t.renameTo(new File(path + "96" + format));
+                    t = new File("/tmp/" + input.getOriginalFilename() + "60" + format);
+                    t.renameTo(new File(path + "60" + format));
+                } else {
+                    System.out.println("Error: " + output.toString());
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            f.delete();
+        }
     }
 
 }

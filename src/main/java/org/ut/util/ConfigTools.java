@@ -1,9 +1,6 @@
 package org.ut.util;
 
 import org.ut.driver.DLocalFiles;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 import java.io.*;
 import java.util.logging.Level;

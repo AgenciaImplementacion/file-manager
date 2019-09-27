@@ -8,6 +8,7 @@ import java.util.List;
 
 public class FileServicesResponse implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     private List<ServiceInfo> services;
 
     public FileServicesResponse() {

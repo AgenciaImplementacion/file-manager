@@ -4,6 +4,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.ut.entity.FolderInfo;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Properties;
 
 public interface Driver {
@@ -18,4 +19,6 @@ public interface Driver {
     boolean isFile(String path) throws IOException;
 
     String getFullPath();
+
+    Map<String, Object> getFile(String path, Boolean thumbnail, String size) throws IOException;
 }
